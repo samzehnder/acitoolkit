@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Snapshot and Rollback</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <div class="jumbotron">
+    <h2>Configuration Snapshot and Rollback</h2>
+    <p>An acitoolkit application</p>      
+  </div>
+
+  <div class="row">
+
+  <!-- Navigation Buttons -->
+  <div class="col-md-3" style="background-color:lightblue;height:100%">
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="/">Snapshot</a></li>
+      <li class="active"><a href="#diffs">Version Diffs</a></li>
+      <li><a href="/rollback">Rollback</a></li>
+    </ul>
+  </div>
+
+  <!-- Content -->
+  <div class="col-md-9">
+    <div class="tab-content">
+    </div>
+    
+    <div class="tab-pane" id="diffs">
+      <form action="diffs" method="get">
+      <p>Please select the 2 versions to view the diffs:</p>
+        <label for="ver1">First version (select one):</label>
+        <select class="selectpicker" name="ver1">
+	  {% for item in table_data %}
+	    {% if item == ver1 %}
+	        <option selected="selected">{{ item }}</option>
+	    {% else %}
+		<option>{{ item }}</option>
+            {% endif %}
+	    {% endfor %}
+        </select>
+        <br>
+        <label for="ver2">Second version (select one):</label>
+        <select class="selectpicker" name="ver2">
+ 	    {% for item in table_data %}
+	    {% if item == ver2 %}
+	        <option selected="selected">{{ item }}</option>
+	    {% else %}
+		<option>{{ item }}</option>
+            {% endif %}
+	    {% endfor %}
+        </select>
+      <button type="submit" class="btn btn-primary">Show Filenames</button>
+      </form>
+	{% if filenames %}
+	<form action="diffs" method="get">
+	<table id="files" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Configuration Files with diffs</th>
+            </tr>
+	</thead>
+	<tbody>   
+	{% for file in filenames %}
+	  <tr>
+	    <td>
+	    {% if diffs[file] %}
+	    <input type="radio" name="file" value="{{ file }}"> {{ file }}
+	    {% else %}
+	    <input type="radio" name="file" value="{{ file }}"
+      disabled><font color="lightgrey"> {{ file }}
+	    {% endif %}
+	  </td>
+	</tr>
+	{% endfor %}
+      </tbody>
+      <input type="hidden" name="ver1" value="{{ ver1 }}">
+      <input type="hidden" name="ver2" value="{{ ver2 }}">
+      <button type="submit" class="btn btn-primary">View Diffs</button>
+    </table>
+    </form>
+      {% endif %}
+    </div>
+    </div>
+  </div>
+
+  </div>
+
+  <script type="text/javascript">
+   $('.selectpicker').selectpicker();
+  </script>
+ 
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('#snapshottable').dataTable( {
+         "order": [[ 0, "desc" ]],
+         "pagingType": "simple"
+    } );
+  } );
+  </script>
+
+  
+<!-- Enable the tabs -->
+<script type="text/javascript">
+  $('#myTabs a').click(function (e) {
+    e.preventDefault()
+    $(this).tab('show')
+  });
+</script>
+
+    <div class="clearfix visible-lg"></div>
+  </div>
+</div>
+
+</body>
+</html>
