@@ -137,9 +137,6 @@ class ConfigDB(object):
                             old_child_idx = old_child_idx + 1
                         else:
                             child_key = current[key]['children'][child_idx].keys()[0]
-                            print 'marked as deleted michsmit'
-                            print key, child_idx, child_key
-                            print current[key]['children'][child_idx][child_key]['attributes']['name']
                             current[key]['children'][child_idx][child_key]['attributes']['status'] = 'deleted'
 
                 old_child_idx = 0
@@ -195,6 +192,19 @@ class ConfigDB(object):
             # Look for any remaining differences
             # If differences exist, it is new config and will be removed.
             self.check_versions(filename, current_version, old_version)
+
+    def sdiff(self, version1, version2, filename):
+        resp = self.repo.git.difftool('-y',
+                                      version1 + ':' + filename,
+                                      version2 + ':' + filename)
+
+    def has_diffs(self, version1, version2, filename):
+        resp = self.repo.git.diff(version1 + ':' + filename,
+                                  version2 + ':' + filename)
+        if len(resp):
+            return True
+        else:
+            return False
 
 
 if __name__ == "__main__":
