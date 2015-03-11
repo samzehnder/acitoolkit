@@ -279,6 +279,8 @@ class Session(object):
         self.session = requests.Session()
         ret = self.session.post(login_url, data=jcred, verify=self.verify_ssl)
         ret_data = json.loads(ret.text)['imdata'][0]
+        if 'error' in ret_data:
+            return ret
         timeout = ret_data['aaaLogin']['attributes']['refreshTimeoutSeconds']
         self.token = str(ret_data['aaaLogin']['attributes']['token'])
         self.subscription_thread._open_web_socket('https://' in self.api)
