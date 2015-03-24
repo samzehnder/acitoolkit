@@ -583,7 +583,13 @@ class EPG(CommonEPG):
                     if isinstance(bd, BridgeDomain):
                         self.add_bd(bd)
             elif 'fvRsPathAtt' in child:
-                pass
+                dn = child['fvRsPathAtt']['attributes']['tDn']
+                intf = InterfaceFactory.create_from_dn(dn)
+                (encap_type, encap_id) =  child['fvRsPathAtt']['attributes']['encap'].split('-')
+                l2intf = L2Interface(str(dn), encap_type, int(encap_id))
+                l2intf.encap_mode = child['fvRsPathAtt']['attributes']['mode']
+                l2intf.attach(intf)
+                self.attach(l2intf)
             elif 'fvRsProv' in child:
                 contract_name = child['fvRsProv']['attributes']['tnVzBrCPName']
                 contract_search = Search()
